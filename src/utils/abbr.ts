@@ -1,3 +1,5 @@
+import { getTextFromHtml } from '@/utils/get-text-from-html';
+
 interface IWiktionaryData {
   parse?: {
     text?: {
@@ -15,12 +17,12 @@ const entityMap = {
   '/': '&#47;'
 };
 
-const escapeHtml = (html: string) => html.replace(/[&<>"'/]/g, (char: string) => entityMap[char]);
+const escapeHtml = (UNSAFE_html: string) => UNSAFE_html.replace(/[&<>"'/]/g, (char: string) => (entityMap as any)[char]);
 
 const MATCHER = /\b(?:Internet slang)|(?:initialism|acronym)\s+of\b/i;
 const EXCLUDER = /\bnon-gloss\b/i;
 
-const SAFE_getAbbrsHtmlAsync = async (UNSAFE_term: string) => {
+export const SAFE_getAbbrsHtmlAsync = async (UNSAFE_term: string): Promise<any> => {
   const res = await fetch(`https://en.wiktionary.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(UNSAFE_term)}&prop=text&origin=*`);
 
   const data: IWiktionaryData = await res.json();
@@ -28,15 +30,10 @@ const SAFE_getAbbrsHtmlAsync = async (UNSAFE_term: string) => {
   const UNSAFE_html = data.parse
     && data.parse.text
     && data.parse.text['*']
-    && data.parse.text['*'];
+    && data.parse.text['*']
+    || '';
 
-  const UNSAFE_text = (() => {
-    const template = document.createElement('template');
-
-    template.innerHTML = UNSAFE_html || '';
-
-    return (template.content.firstElementChild as any).innerText;
-  })();
+  const UNSAFE_text = getTextFromHtml(UNSAFE_html);
 
   const UNSAFE_lines = UNSAFE_text.split('\n').filter((UNSAFE_line: string) => UNSAFE_line.trim().length);
 
@@ -63,5 +60,3 @@ const SAFE_getAbbrsHtmlAsync = async (UNSAFE_term: string) => {
     return `<abbr title="${SAFE_title}">${SAFE_term}</abbr>`;
   });
 };
-
-export default SAFE_getAbbrsHtmlAsync;

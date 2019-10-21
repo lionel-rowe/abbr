@@ -40,8 +40,8 @@
     props: [ 'SAFE_abbrsHtmlPromise' ],
 
     methods: {
-      setSelectedAbbrHtml: function(e) {
-        this.selectedResult = e.currentTarget.value;
+      setSelectedAbbrHtml: function(e: Event) {
+        this.selectedResult = (e.currentTarget as HTMLInputElement).value;
       }
     },
 
@@ -54,18 +54,16 @@
           const SAFE_resultsHtml = await SAFE_newAbbrsHtmlPromise;
 
           this.results = SAFE_resultsHtml
-            .map((html, idx) => ({ idx, key: idx, SAFE_html: html }));
+            .map((html: string, idx: number) => ({ idx, key: idx, SAFE_html: html }));
 
           if (this.results.length) {
             this.currentLoadState = LoadStates.Complete;
 
-            this.selectedResult = this.results[0].SAFE_html;
+            this.selectedResult = (this.results[0] as any).SAFE_html;
           } else {
             this.currentLoadState = LoadStates.NoResults;
           }
         } catch(err) {
-          console.error(err);
-
           this.currentLoadState = LoadStates.Error;
         }
       }
@@ -73,7 +71,7 @@
 
     data() {
       return {
-        id: this._uid,
+        id: (this as any)._uid,
         LoadStates,
         currentLoadState: LoadStates.Complete,
         results: [],

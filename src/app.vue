@@ -10,7 +10,7 @@
   import Vue from 'vue';
   import SearchBar from '@/components/search-bar.vue';
   import ResultsDisplay from '@/components/results-display.vue';
-  import SAFE_getAbbrsHtmlAsync from '@/utils/abbr';
+  import { SAFE_getAbbrsHtmlAsync } from '@/utils/abbr';
 
   export default Vue.extend({
     components: {
@@ -31,3 +31,9 @@
     }
   });
 </script>
+
+<style lang="scss" scoped>
+.h3 {
+  margin-top: 100px;
+}
+</style>
